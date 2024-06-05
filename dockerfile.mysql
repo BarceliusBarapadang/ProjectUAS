@@ -1,0 +1,15 @@
+# Stage 1: Builder untuk menyiapkan skrip atau alat tambahan jika diperlukan
+FROM alpine:latest AS builder
+
+# Install alat-alat tambahan jika diperlukan
+RUN apk add --no-cache curl
+
+# Salin skrip inisialisasi atau alat tambahan dari host ke image builder
+COPY ./initdb.d /initdb.d
+
+# Stage 2: MySQL base image
+FROM mysql:latest
+
+# Salin skrip inisialisasi dari builder stage ke direktori Docker entrypoint
+COPY --from=builder /initdb.d /docker-entrypoint-initdb.d
+
